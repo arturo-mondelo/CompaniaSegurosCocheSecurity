@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
+        <property name="url" value="jdbc:derby://localhost:1527/BDCompañiaSegurosCocheSecurity"/>
+        <property name="username" value="postal"/>
+        <property name="password" value="postal"/>
+    </bean>
+    
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        
+         <property name="annotatedClasses">
+            <list>
+                <value>modelo.Cliente</value>
+                <value>modelo.Vehiculo</value>
+                <value>modelo.Poliza</value>
+                <value>modelo.Direccion</value>
+                <value>modelo.User</value>
+                <value>modelo.Role</value>
+            </list>
+        </property>
+ 
+        <property name="hibernateProperties">
+
+            <props>
+              <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- para que las transacciones se hagan solas Atiende a las que aparecen con un @Transactional-->
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <!-- Para no querer configurar aspectos hay que insertar esta línea -->
+    <tx:annotation-driven transaction-manager="txManager"></tx:annotation-driven>
+
+    <!-- Como le indico que atienda a las anotaciones de Spring, Para que me cree el Service y el Dao
+    Por eso hay que poner Autowired en el service OJO-->
+    <context:component-scan base-package="dao"></context:component-scan>
+    <context:component-scan base-package="modelo"></context:component-scan>
+    <context:component-scan base-package="service"></context:component-scan>
+    <context:component-scan base-package="validators"></context:component-scan>
+    <context:component-scan base-package="controller"></context:component-scan>
+    <context:component-scan base-package="utilidades"></context:component-scan>
+    
+    <security:global-method-security secured-annotations="enabled"/>
+    <security:http auto-config="true" use-expressions="true">
+        <security:intercept-url pattern="/index*" access="permitAll"/><security:intercept-url pattern="/login*" access="permitAll"/>
+        <security:intercept-url pattern="/errorLogin*" access="permitAll"/><security:intercept-url pattern="/accesoDenegado*" access="permitAll"/>
+        <security:intercept-url pattern="/altaCliente*" access="isAuthenticated()"/><security:intercept-url pattern="/mostrarClientes*" access="isAuthenticated()"/><security:intercept-url pattern="/eliminarCliente*" access="isAuthenticated()"/><security:intercept-url pattern="/editarCliente*" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/altaPoliza*" access="isAuthenticated()"/><security:intercept-url pattern="/editarPoliza*" access="isAuthenticated()"/><security:intercept-url pattern="/eliminarPoliza*" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/mostrarPolizas*" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/altaVehiculo*" access="isAuthenticated()"/><security:intercept-url pattern="/editarVehiculo*" access="isAuthenticated()"/><security:intercept-url pattern="/eliminarVehiculo*" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/mostrarVehiculos*" access="isAuthenticated()"/>
+        <security:access-denied-handler error-page="/accesoDenegado.htm"/>
+        <security:form-login login-page="/login.htm"  authentication-failure-url="/errorLogin.htm" username-parameter="nombre_usuario" password-parameter="contrasena"/>
+        <security:logout logout-success-url="/index.htm"/>
+    </security:http>
+    
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="miUserDetailsService">
+            <security:password-encoder hash="plaintext"></security:password-encoder>
+        </security:authentication-provider>
+    </security:authentication-manager>
+    
+    
+    
+
+
+</beans>
