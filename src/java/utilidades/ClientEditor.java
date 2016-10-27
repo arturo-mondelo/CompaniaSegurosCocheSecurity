@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * utilidades
  */
 package utilidades;
 
@@ -13,7 +11,7 @@ import service.ClienteService;
 
 /**
  *
- * @author Arturo
+ * @author amondelo
  */
 @Component
 public class ClientEditor extends PropertyEditorSupport {
@@ -38,7 +36,7 @@ public class ClientEditor extends PropertyEditorSupport {
        }
       long id=c.getId();
       return Long.toString(id);
-        //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     
