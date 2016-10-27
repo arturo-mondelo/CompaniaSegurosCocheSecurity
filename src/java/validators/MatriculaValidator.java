@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * validar matrícula
  */
 package validators;
 
@@ -10,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  *
- * @author admin1
+ * @author amondelo
  */
 public class MatriculaValidator implements ConstraintValidator<Matricula,String>{
      @Override
